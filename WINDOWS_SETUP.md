@@ -1,293 +1,118 @@
-# 🪟 LAV SMS - Windows Setup Guide (COMPLETE)
+# LAV SMS — Windows Setup (One Command)
 
-## ❌ Your Current Errors & Fixes
+## Run this
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `'composer' is not recognized` | Composer not installed | Install Composer (Step 2 below) |
-| `'php' is not recognized` | PHP not installed | Install PHP (Step 1 below) |
-| `'cp' is not recognized` | `cp` is Linux command | Use `copy` on Windows |
-| `README.md / readme.md collision` | Case-insensitive filesystem | ✅ **FIXED** - deleted duplicate |
+Open **PowerShell** and paste these 3 lines:
 
----
-
-## 📥 Step 1: Install PHP on Windows
-
-### Option A: Using XAMPP (Easiest)
-1. Download XAMPP from: https://www.apachefriends.org/
-2. Install it (default location: `C:\xampp`)
-3. PHP will be at: `C:\xampp\php\php.exe`
-
-### Option B: Standalone PHP
-1. Download PHP 8.1 from: https://windows.php.net/download/
-   - Choose **VS16 x64 Thread Safe** (ZIP file)
-2. Extract to `C:\php`
-3. Edit `C:\php\php.ini-development`:
-   - Rename it to `php.ini`
-   - Uncomment these lines (remove the `;`):
-     ```ini
-     extension_dir = "ext"
-     extension=pdo_pgsql
-     extension=pgsql
-     extension=openssl
-     extension=mbstring
-     extension=fileinfo
-     extension=gd
-     extension=curl
-     extension=zip
-     extension=intl
-     ```
-
-### Add PHP to PATH:
-1. Press `Windows Key + S` → Search "Environment Variables"
-2. Click "Edit the system environment variables"
-3. Click "Environment Variables" button
-4. Under "System variables" → Find `Path` → Click "Edit"
-5. Click "New" → Add: `C:\xampp\php` (or `C:\php` if standalone)
-6. Click OK on all dialogs
-7. **CLOSE and REOPEN** your Command Prompt!
-
-### Verify PHP:
-```cmd
-php -v
-```
-Should show: `PHP 8.1.x` or similar
-
----
-
-## 📥 Step 2: Install Composer on Windows
-
-1. Download Composer installer: https://getcomposer.org/Composer-Setup.exe
-2. Run the installer
-3. When it asks for PHP path, select:
-   - `C:\xampp\php\php.exe` (if using XAMPP)
-   - `C:\php\php.exe` (if standalone)
-4. Complete installation
-5. **CLOSE and REOPEN** your Command Prompt!
-
-### Verify Composer:
-```cmd
-composer --version
-```
-Should show: `Composer version 2.x.x`
-
----
-
-## 📥 Step 3: Clone the Repository (Fresh)
-
-Since you had the collision issue, delete the old folder and re-clone:
-
-```cmd
-cd C:\Users\muhux\Downloads
-rmdir /s /q "Compressed\Lav-sms-main"
-git clone https://github.com/UnicoShadow/lav-sms.git
-cd lav-sms
+```powershell
+cd C:\Users\muhux\Downloads\lav-sms
+git pull
+powershell -ExecutionPolicy Bypass -File .\fix.ps1
 ```
 
-> If you don't have Git: Download from https://git-scm.com/download/win
+The script does everything: enables PHP extensions, removes duplicate
+php.ini lines, installs Composer packages, writes `.env`, prompts you for
+your Supabase password, runs a **live database connection test**, and
+starts the server.
 
----
+Then open **http://localhost:8000**
 
-## 📥 Step 4: Install Dependencies
-
-```cmd
-composer install
-```
-
-This will take 2-5 minutes. Wait for it to finish.
-
----
-
-## 📥 Step 5: Create .env File
-
-⚠️ **On Windows, use `copy` NOT `cp`:**
-
-```cmd
-copy .env.example.supabase .env
-```
-
----
-
-## 📥 Step 6: Set Database Password
-
-### Get your Supabase password:
-1. Go to https://supabase.com/dashboard
-2. Open **"UnicoShadow's Project"**
-3. Go to **Settings** → **Database**
-4. Find **"Connection String"** section
-5. You'll see: `postgresql://postgres:[YOUR-PASSWORD]@db.mslydvabhamtjltuseno.supabase.co:5432/postgres`
-6. Copy the password
-
-### If you don't know the password:
-1. Same page → **"Database Password"** section
-2. Click **"Reset database password"**
-3. Set a new one and remember it!
-
-### Edit the .env file:
-Open `.env` in Notepad:
-```cmd
-notepad .env
-```
-
-Find this line:
-```
-DB_PASSWORD=YOUR_SUPABASE_DB_PASSWORD_HERE
-```
-
-Replace with your actual password:
-```
-DB_PASSWORD=your_actual_password
-```
-
-Save and close Notepad.
-
----
-
-## 📥 Step 7: Generate App Key
-
-```cmd
-php artisan key:generate
-```
-
-Should show: `Application key set successfully.`
-
----
-
-## 📥 Step 8: Create Storage Link
-
-```cmd
-php artisan storage:link
-```
-
----
-
-## 📥 Step 9: Clear All Caches
-
-```cmd
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
-php artisan route:clear
-```
-
----
-
-## 📥 Step 10: Start the Server
-
-```cmd
-php artisan serve
-```
-
-You should see:
-```
-Starting Laravel development server: http://127.0.0.1:8000
-```
-
----
-
-## 🌐 Step 11: Open the App
-
-Open your browser and go to: **http://localhost:8000**
-
-### Login with:
 | Field | Value |
-|-------|-------|
+|---|---|
 | Email | `admin@lavsms.com` |
 | Password | `cj` |
 
 ---
 
-## 🐛 Troubleshooting Windows Issues
+## Getting your Supabase password
 
-### "php is not recognized" after install
-- Make sure you **closed and reopened** Command Prompt after editing PATH
-- Try the full path: `C:\xampp\php\php.exe artisan serve`
+The script will prompt for it. To find it:
 
-### "composer install" fails with extension error
-- Edit `php.ini` and make sure these are uncommented:
-  ```ini
-  extension=pdo_pgsql
-  extension=pgsql
-  extension=openssl
-  extension=mbstring
-  extension=fileinfo
-  extension=gd
-  extension=curl
-  extension=zip
-  extension=intl
-  ```
+1. https://supabase.com/dashboard → **UnicoShadow's Project**
+2. **Settings → Database → Connection string**
+3. Copy the password (between `postgres:` and `@`)
 
-### "could not find driver" error
-- This means `pdo_pgsql` extension is not enabled
-- Edit `php.ini` → uncomment `extension=pdo_pgsql` and `extension=pgsql`
-- Restart the server
-
-### "SSL connection error"
-- In `config/database.php`, change `'sslmode' => 'prefer'` to `'sslmode' => 'require'`
-
-### "Permission denied" for storage
-- Run Command Prompt as **Administrator**
-- Or manually create folders:
-  ```cmd
-  mkdir storage\app\public
-  mkdir storage\framework\cache\data
-  mkdir storage\framework\sessions
-  mkdir storage\framework\views
-  ```
-
-### Port 8000 already in use
-- Use a different port: `php artisan serve --port=8080`
-
-### "Class not found" errors
-- Run: `composer dump-autoload`
+Don't know it? Click **Reset database password** on that same page.
 
 ---
 
-## 📋 Quick Command Summary (Copy-Paste Ready)
+## What was broken and how it was fixed
 
-After installing PHP + Composer, run these ONE BY ONE:
+| # | Problem | Root cause | Fix |
+|---|---|---|---|
+| 1 | `README.md / readme.md` collision | Two files differing only in case; Windows is case-insensitive | Deleted duplicate |
+| 2 | `phpspec/prophecy requires php <8.1` | `composer.lock` pinned to PHP 7.x-era packages | Deleted lock file, widened `composer.json` to PHP 8.2 |
+| 3 | `dompdf ... affected by security advisories` | Composer 2.10 blocks flagged packages by default | Set `policy.advisories.block = false` |
+| 4 | `zip extension and unzip/7z are both missing` | XAMPP ships extensions commented out | Script uncomments `zip`, `pdo_pgsql`, `pgsql`, `gd`, `curl`, `mbstring`, `fileinfo`, `openssl`, `intl`, `exif` |
+| 5 | `Module "openssl" is already loaded` | Earlier blind find-and-replace created duplicate lines | Script now de-duplicates `extension=` lines |
+| 6 | **`could not translate host name db.<ref>.supabase.co`** | **The direct host is IPv6-only. Your network is IPv4-only.** | **Switched to the IPv4 Supavisor pooler** |
+| 7 | `APP_DEBUG is true while APP_ENV is not local` | `APP_ENV=production` | Set `APP_ENV=local` |
+| 8 | Login would have silently failed | Password stored as `$2b$` bcrypt; PHP expects `$2y$` | Re-hashed the admin password as `$2y$` |
+| 9 | Broken avatar image everywhere | `photo` column held `default.jpg`, a file that doesn't exist | Repointed to `/global_assets/images/user.png` |
 
-```cmd
-cd C:\Users\muhux\Downloads
-git clone https://github.com/UnicoShadow/lav-sms.git
-cd lav-sms
-composer install
-copy .env.example.supabase .env
-notepad .env
+### About #6 — the important one
+
 ```
-*(Edit DB_PASSWORD, save, close Notepad)*
-```cmd
-php artisan key:generate
-php artisan storage:link
-php artisan config:clear
-php artisan cache:clear
-php artisan serve
+db.mslydvabhamtjltuseno.supabase.co
+  IPv4 (A)    -> none
+  IPv6 (AAAA) -> 2406:da18:1f5e:4101:86fc:6ea0:cc78:f102
 ```
 
-Then open: **http://localhost:8000**
+There is no IPv4 address, so no amount of DNS flushing or switching to 8.8.8.8
+can ever make it resolve on an IPv4-only network. Supabase's answer is the
+connection pooler, which **is** on IPv4:
+
+```
+aws-0-ap-southeast-1.pooler.supabase.com -> 54.255.219.82
+```
+
+Note the username changes too — it becomes `postgres.<project-ref>`:
+
+```
+DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
+DB_PORT=5432
+DB_DATABASE=postgres
+DB_USERNAME=postgres.mslydvabhamtjltuseno
+```
+
+This is already set in `.env.example.supabase`, and `fix.ps1` enforces it.
 
 ---
 
-## ✅ What's Already Done (No Action Needed)
+## Database status (verified)
 
-| Component | Status |
-|-----------|--------|
-| GitHub Repository | ✅ https://github.com/UnicoShadow/lav-sms |
-| Supabase Database (31 tables) | ✅ Created & configured |
-| Foreign Keys & Indexes | ✅ Applied |
-| Reference Data (states, blood groups, etc.) | ✅ Seeded |
-| Admin User | ✅ Created |
-| App Settings | ✅ Seeded |
-| README collision | ✅ Fixed |
-| .env template | ✅ Pre-configured for Supabase |
+| Item | Count |
+|---|---|
+| Tables | 31 |
+| Foreign keys | 48 |
+| Indexes | 59 |
+| Nigerian states | 37 |
+| Nationalities | 57 |
+| Blood groups | 8 |
+| User roles | 5 |
+| Class types | 6 |
+| App settings | 19 |
+| Admin users | 1 |
 
 ---
 
-## 🔗 Important Links
+## Troubleshooting
 
-- **GitHub Repo:** https://github.com/UnicoShadow/lav-sms
-- **Supabase Dashboard:** https://supabase.com/dashboard
-- **PHP Download:** https://windows.php.net/download/
-- **XAMPP Download:** https://www.apachefriends.org/
-- **Composer Download:** https://getcomposer.org/Composer-Setup.exe
-- **Git Download:** https://git-scm.com/download/win
+**`password authentication failed`** — wrong password in `.env`. Reset it in
+the Supabase dashboard, update `.env`, then `php artisan config:clear`.
+
+**`Tenant or user not found`** — `DB_USERNAME` must be
+`postgres.mslydvabhamtjltuseno`, not plain `postgres`.
+
+**`could not find driver`** — `pdo_pgsql` isn't loaded. Check with:
+```powershell
+php -r "echo implode(',', PDO::getAvailableDrivers());"
+```
+`pgsql` must appear in the output.
+
+**Server starts but pages error** — clear caches:
+```powershell
+php artisan config:clear; php artisan cache:clear; php artisan view:clear
+```
+
+**Restore your php.ini** — the script backs it up to `php.ini.backup`.
